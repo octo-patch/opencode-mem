@@ -533,14 +533,14 @@ const CONFIG_TEMPLATE = `{
 
   // MiniMax (Anthropic Messages-compatible endpoint, with session support):
   //   "memoryProvider": "minimax"
-  //   "memoryModel": "MiniMax-M3"                  // 1,000,000-token context
-  //   // Alternative: "MiniMax-M2.7"                // 204,800-token context; thinking always on
+  //   "memoryModel": "MiniMax-M3.1-Flash"          // 1,000,000-token context; thinking always on
+  //   // Alternative: "MiniMax-M3"                  // 1,000,000-token context; thinking off by default
   //   "memoryApiUrl": "https://api.minimax.io"        // global endpoint
   //   "memoryApiKey": "<MiniMax API key>"
-  //   // China endpoint: "memoryApiUrl": "https://api.minimaxi.com"
-  //   // MiniMax-M3 supports adaptive or disabled thinking; MiniMax-M2.7 thinking is always on.
-  //   // Optional adaptive thinking for MiniMax-M3:
-  //   "memoryExtraParams": { "thinking": { "type": "adaptive" } }
+  //   // China endpoint: "memoryApiUrl": "https://api.minimax.cn"
+  //   // Flash effort: low | medium | high | xhigh | max (default). Do not disable thinking.
+  //   "memoryExtraParams": { "output_config": { "effort": "max" } }
+  //   // For MiniMax-M3, optionally use { "thinking": { "type": "adaptive" } } instead.
 
   // OrcaRouter (OpenAI-compatible gateway, namespaced model IDs, with session support):
   //   "memoryProvider": "orcarouter"

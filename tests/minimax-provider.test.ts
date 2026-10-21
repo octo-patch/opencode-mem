@@ -83,7 +83,12 @@ describe("MiniMaxProvider", () => {
     expect(provider.resolveEndpoint()).toBe("https://api.minimax.io/anthropic/v1/messages");
   });
 
-  it("resolves the China endpoint at api.minimaxi.com", () => {
+  it("resolves the current China endpoint at api.minimax.cn", () => {
+    const { provider } = makeProvider({ apiUrl: "https://api.minimax.cn" });
+    expect(provider.resolveEndpoint()).toBe("https://api.minimax.cn/anthropic/v1/messages");
+  });
+
+  it("resolves a legacy China endpoint at api.minimaxi.com", () => {
     const { provider } = makeProvider({ apiUrl: "https://api.minimaxi.com" });
     expect(provider.resolveEndpoint()).toBe("https://api.minimaxi.com/anthropic/v1/messages");
   });
@@ -180,6 +185,15 @@ describe("MiniMaxProvider", () => {
     expect(Array.isArray(capturedBody?.tools)).toBe(true);
   });
 
+  it("keeps the recommended Flash model aligned in config templates", () => {
+    const template = readFileSync(new URL("../src/config.ts", import.meta.url), "utf8");
+    const example = readFileSync(new URL("../opencode-mem.example.jsonc", import.meta.url), "utf8");
+    const modelPattern = /\/\/ MiniMax \(Anthropic[\s\S]*?"memoryModel": "([^"]+)"/;
+    const memoryModel = template.match(modelPattern)?.[1];
+    expect(memoryModel).toBe("MiniMax-M3.1-Flash");
+    expect(example.match(modelPattern)?.[1]).toBe(memoryModel);
+  });
+
   for (const apiUrl of [
     "https://api.minimax.io",
     "https://api.minimax.cn",
@@ -187,18 +201,9 @@ describe("MiniMaxProvider", () => {
   ]) {
     for (const effort of [undefined, "low", "medium", "high", "xhigh", "max"]) {
       it(`sends the recommended Flash configuration to ${apiUrl} with effort ${effort ?? "default"}`, async () => {
-        const template = readFileSync(new URL("../src/config.ts", import.meta.url), "utf8");
-        const example = readFileSync(
-          new URL("../opencode-mem.example.jsonc", import.meta.url),
-          "utf8"
-        );
-        const modelPattern = /\/\/ MiniMax \(Anthropic[\s\S]*?"memoryModel": "([^"]+)"/;
-        const memoryModel = template.match(modelPattern)?.[1];
-        expect(memoryModel).toBe("MiniMax-M3.1-Flash");
-        expect(example.match(modelPattern)?.[1]).toBe(memoryModel);
         const config = buildMemoryProviderConfig({
           memoryProvider: "minimax",
-          memoryModel,
+          memoryModel: "MiniMax-M3.1-Flash",
           memoryApiUrl: apiUrl,
           memoryApiKey: "fixture-only-key",
           memoryExtraParams: effort ? { output_config: { effort } } : undefined,

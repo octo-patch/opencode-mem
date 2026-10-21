@@ -466,7 +466,7 @@ memory({ mode: "import", inputPath: "./memories.json" });
 - `openai-chat`：兼容 OpenAI Chat Completions、带工具/函数调用的 API。仅当所选上游模型与代理保留工具调用时，这可与兼容代理（如 LiteLLM）一起工作。
 - `openai-responses`：带函数调用输出的 OpenAI Responses API。
 - `anthropic`：带工具使用的 Anthropic Messages API。
-- `minimax`：MiniMax Anthropic Messages 兼容端点。将 `memoryApiUrl` 设置为全球端点（`https://api.minimax.io`）或中国端点（`https://api.minimaxi.com`）；`/anthropic/v1/messages` 路径与 `x-api-key` 标头会自动应用。当前模型包括 `MiniMax-M3`（1,000,000-token 上下文；自适应或禁用思考）与 `MiniMax-M2.7`（204,800-token 上下文；始终开启思考）。`MiniMax-M3` 通过 `memoryExtraParams` 支持自适应思考。
+- `minimax`：MiniMax Anthropic Messages 兼容端点。将 `memoryApiUrl` 设置为全球端点（`https://api.minimax.io`）或[中国端点](https://platform.minimaxi.com/docs/api-reference/text-anthropic-api.md)（`https://api.minimax.cn`）；`/anthropic/v1/messages` 路径与 `x-api-key` 标头会自动应用。使用 `MiniMax-M3.1-Flash`（推荐）或 `MiniMax-M3`，二者均为 1,000,000-token 上下文。Flash 始终开启思考；可选将 `memoryExtraParams` 设为 `{ "output_config": { "effort": "max" } }`，取值为 `low`、`medium`、`high`、`xhigh` 或 `max`（默认）。Flash 会拒绝禁用思考与 effort `none`，且不支持 `service_tier`。在此端点上 M3 思考默认关闭；可通过 `{ "thinking": { "type": "adaptive" } }` 启用。模型 ID 仍需显式配置；已有自定义或旧版 ID 会原样透传。参见 [MiniMax 兼容性参考](https://platform.minimax.io/docs/api-reference/text-anthropic-api.md)。
 - `orcarouter`：带命名空间模型 ID 的 OpenAI 兼容模型网关。`memoryApiUrl` 与 `memoryModel` 可选 — 它们默认为 `https://api.orcarouter.ai/v1` 与 `orcarouter/auto`（按请求选择有能力模型的路由别名）。若设置 `memoryModel`，请使用命名空间 ID，例如 `openai/gpt-5.5` 或 `deepseek/deepseek-v4-flash`；OrcaRouter 拒绝裸模型名。示例：
   ```jsonc
   "memoryProvider": "orcarouter",
